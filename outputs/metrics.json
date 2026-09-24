@@ -1,0 +1,8 @@
+{
+  "MAE": 4.192,
+  "RMSE": 5.26,
+  "MAPE_percent": 11.555,
+  "train_rows": 56200,
+  "test_rows": 14100,
+  "split_date": "2025-08-13"
+}
