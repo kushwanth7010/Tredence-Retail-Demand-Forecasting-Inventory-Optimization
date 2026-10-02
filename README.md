@@ -115,7 +115,7 @@ The rolling statistics use `shift(1)` before calculating the rolling window, so 
 
 The model is an `XGBRegressor` configured for nonlinear tabular regression. XGBoost is suitable here because demand depends on nonlinear interactions among historical demand, seasonality, price and promotions.
 
-Instead of randomly splitting observations, the project performs a **chronological split**. Earlier dates form the training period and the newest dates are held out as unseen test data. This better represents the forecasting setting because future observations are not allowed into training.
+Instead of randomly splitting observations, the project performs a **chronological split**. Earlier dates form the training period and the newest dates are held out of model training. Each held-out day's lag features use **actual demand observed on preceding days**, including earlier held-out days. The reported results therefore measure a **rolling one-step-ahead backtest**, not a multi-month forecast made at the split date. A genuine multi-step forecast would require a separate recursive or direct multi-horizon evaluation.
 
 ### Evaluation Metrics
 
@@ -143,7 +143,7 @@ Reorder Point = Average Daily Forecast × Lead Time + Safety Stock
 
 The project uses `z = 1.65`, which approximates a **95% one-sided service level** under a normal-demand assumption.
 
-The resulting store-SKU recommendations are saved in [`outputs/inventory_recommendations.csv`](outputs/inventory_recommendations.csv).
+The resulting **retrospective, simulated** store-SKU recommendations are saved in [`outputs/inventory_recommendations.csv`](outputs/inventory_recommendations.csv). The formula uses variability of predicted daily demand, **not** independently calibrated forecast-error uncertainty; its 95% normal-quantile input does not guarantee a 95% realized service level.
 
 This is a portfolio-level analytical formulation. A production system should additionally consider forecast uncertainty by horizon, holding cost, ordering cost, supplier reliability, minimum order quantities, service-level targets and capacity constraints.
 
