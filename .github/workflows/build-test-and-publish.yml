@@ -7,7 +7,7 @@ on:
   pull_request:
 
 permissions:
-  contents: write
+  contents: read
 
 jobs:
   build-test-publish:
@@ -31,15 +31,12 @@ jobs:
       - name: Run automated tests
         run: pytest -q
 
-      - name: Commit reproducible data and model artifacts
-        if: github.event_name != 'pull_request'
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add data/ models/ outputs/
-          if ! git diff --cached --quiet; then
-            git commit -m "Generate reproducible data, trained model and outputs [skip ci]"
-            git push origin HEAD:main
-          else
-            echo "Generated artifacts are already up to date."
-          fi
+      - name: Upload reproducible data, model and reports
+        uses: actions/upload-artifact@v4
+        with:
+          name: generated-retail-data-model-and-reports
+          path: |
+            data/
+            models/
+            outputs/
+          if-no-files-found: error
